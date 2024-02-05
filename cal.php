@@ -125,8 +125,7 @@ $zodiacInfo = getZodiacSign();
 // Output the results
 echo '<br/>';
 echo '' . $zodiacInfo['zodiacSignChinese'] . PHP_EOL;
-echo '<br/>';
-echo '' . $zodiacInfo['zodiacSign'] . PHP_EOL;
+echo ' ' . $zodiacInfo['zodiacSign'] . PHP_EOL;
 
 
 ?>
