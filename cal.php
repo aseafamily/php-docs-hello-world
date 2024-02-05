@@ -25,6 +25,8 @@ if (file_exists($fileToRequire)) {
 use com\nlf\calendar\Lunar;
 use com\nlf\calendar\Solar;
 
+date_default_timezone_set('America/Los_Angeles');
+
 $currentYear = date('Y');
 $currentMonth = date('m');
 $currentDate = date('d');
