@@ -32,10 +32,11 @@ if (isset($data['data']) && is_array($data['data'])) {
             $lines = explode(' - <small><i>', $randomQuote);
 
             // Apply styles to each line
-            $styledQuote = '<body style="background-color: black; text-align: center;"><div style="background-color: black; color: #888; font-size: 90px; font-family: Montserrat, sans-serif; padding: 20px;">';
+            $styledQuote = '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="3600"></head>';
+            $styledQuote .= '<body style="background-color: black; text-align: center;"><div style="background-color: black; color: #888; font-size: 90px; font-family: Montserrat, sans-serif; padding: 20px;">';
             $styledQuote .= '<div style="font-size: 90px;">' . $lines[0] . '</div>';
             $styledQuote .= '<div style="font-size: 45px; font-style: italic;"><br> - ' . $lines[1] . '</div>';
-            $styledQuote .= '</div></body>';
+            $styledQuote .= '</div></body></html>';
 
             // Return the styled quote
             echo $styledQuote;
