@@ -19,7 +19,7 @@ $data = json_decode($jsonResponse, true);
 if (isset($data['data']) && is_array($data['data'])) {
     // Extract the inspirational_quote values into an array
     $filteredQuotes = array_filter($data['data'], function($quote) {
-        return strlen($quote['inspirational_quote']) < 100;
+        return strlen($quote['inspirational_quote']) < 200;
     });
 
 
@@ -32,7 +32,7 @@ if (isset($data['data']) && is_array($data['data'])) {
             $lines = explode(' - <small><i>', $randomQuote);
 
             // Apply styles to each line
-            $styledQuote = '<body style="background-color: black;"><div style="background-color: black; color: #888; font-size: 90px; font-family: Montserrat, sans-serif; padding: 20px;">';
+            $styledQuote = '<body style="background-color: black; text-align: center;"><div style="background-color: black; color: #888; font-size: 90px; font-family: Montserrat, sans-serif; padding: 20px;">';
             $styledQuote .= '<div style="font-size: 90px;">' . $lines[0] . '</div>';
             $styledQuote .= '<div style="font-size: 45px; font-style: italic;"><br> - ' . $lines[1] . '</div>';
             $styledQuote .= '</div></body>';
