@@ -53,7 +53,7 @@ foreach ($lunar->getOtherFestivals() as $f) {
         }
 if (strlen($s) > 0) {
 	echo $s;
-	echo "<br/>";
+	//echo "<br/>";
 }
 
 $jq = $lunar->getJieQi();
