@@ -5,5 +5,6 @@ set "destination_dir=Z:\WebStation\phpTest"
 echo Copying .php files from %source_dir% to %destination_dir%...
 
 xcopy /Y /S /I "%source_dir%\*.php" "%destination_dir%"
+xcopy /Y /S /I "%source_dir%\*.json" "%destination_dir%"
 
 echo Copy completed.

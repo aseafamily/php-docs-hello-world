@@ -9,8 +9,15 @@ function fetchJsonResponse($url) {
     return $response;
 }
 
+function fetchJsonResponseFromFile($filePath) {
+    // Read the contents of the file
+    $jsonContents = file_get_contents($filePath);
+    return $jsonContents;
+}
+
 // Fetch the JSON response from the URL
-$jsonResponse = fetchJsonResponse('https://randomwordgenerator.com/json/inspirational-quote_ws.json');
+// $jsonResponse = fetchJsonResponse('https://randomwordgenerator.com/json/inspirational-quote_ws.json');
+$jsonResponse = fetchJsonResponseFromFile("quotes.json");
 
 // Decode the JSON response
 $data = json_decode($jsonResponse, true);
