@@ -1,55 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<style>
+body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+h4 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.card {
+    background-color: #222;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 14px;
+    color: #ccc;
+    margin: 5px 0;
+}
+
+.card img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+</style>
+</head>
+<body>
 <?php
 
-// NewsAPI API key
-$apiKey = 'e7d047b73b0a468b8b8d11fb17b8dec8';
+session_start();
 
-// Function to fetch top news headlines with images using cURL
-function getTopNewsWithImages($apiKey) {
-    $url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=$apiKey&pageSize=10";
-
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($curl);
-    curl_close($curl);
-
-    return json_decode($response, true);
-}
-
-// Call the function to get top news headlines with images
-$news = getTopNewsWithImages($apiKey);
-
-// Check if the response contains news data
-if(isset($news['articles'])) {
-    // Randomly shuffle the news articles array
-    shuffle($news['articles']);
-
-    echo '<!DOCTYPE html>';
-    echo '<html>';
-    echo '<head>';
-    echo '<meta charset="UTF-8">';
-    echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-    echo '<style>';
-    echo 'body { background-color: #000; color: #fff; font-family: Arial, sans-serif; }';
-    echo '.news-item { padding: 10px; margin-bottom: 10px; background-color: #333; border-radius: 10px; }';
-    echo '.news-title { font-size: 18px; margin: 10px; }';
-    echo '.news-image { max-width: 100%; height: auto; }';
-    echo '</style>';
-    echo '</head>';
-    echo '<body>';
-
-    foreach($news['articles'] as $article) {
-        echo '<div class="news-item">';
-        echo '<h4 class="news-title">' . $article['title'] . '</h4>';
-        if(isset($article['urlToImage'])) {
-            echo '<img class="news-image" src="' . $article['urlToImage'] . '" alt="News Image">';
+// Function to filter items based on an array of deleted titles
+function filterItems($items, $deletedTitles) {
+    $filteredItems = [];
+    foreach ($items as $item) {
+        $title = $item->getElementsByTagName('title')->item(0)->textContent;
+        // Check if the title exists in the deleted titles array
+        if (!in_array($title, $deletedTitles)) {
+            // Add the item to filtered items
+            $filteredItems[] = $item;
         }
-        echo '</div>';
     }
-
-    echo '</body>';
-    echo '</html>';
-} else {
-    echo 'Failed to fetch news.';
+    return $filteredItems;
 }
 
+// URL of the New York Times homepage RSS feed
+$rss_feed_url = 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml';
+
+// Get the delete_title parameter from the query string
+$deleteTitle = $_GET['delete_title'] ?? '';
+
+// Retrieve deleted titles from session or initialize as empty array
+$deletedTitles = $_SESSION['deleted_titles'] ?? [];
+
+// Check if delete_title is provided
+if (!empty($deleteTitle)) {
+    $deleteTitle = urldecode($deleteTitle);
+    // Add the delete_title to deleted titles array
+    $deletedTitles[] = $deleteTitle;
+    // Remove duplicate titles
+    $deletedTitles = array_unique($deletedTitles);
+    // Update deleted titles in session
+    $_SESSION['deleted_titles'] = $deletedTitles;
+
+    // print_r($_SESSION['deleted_titles']);
+}
+
+// Fetch RSS feed and parse it with DOMDocument
+$rss_content = file_get_contents($rss_feed_url);
+$rss_xml = new DOMDocument();
+@$rss_xml->loadXML($rss_content);
+
+// Get the items
+$items = $rss_xml->getElementsByTagName('item');
+
+// Shuffle the items randomly
+$items_array = iterator_to_array($items);
+$filteredItems = filterItems($items_array, $deletedTitles);
+shuffle($filteredItems);
+
+// Output each item
+foreach ($filteredItems as $item) {
+    $title = $item->getElementsByTagName('title')->item(0)->textContent;
+    $link = $item->getElementsByTagName('link')->item(0)->textContent;
+    $description = $item->getElementsByTagName('description')->item(0)->textContent;
+    $pubDate = date('F j, Y, g:i a', strtotime($item->getElementsByTagName('pubDate')->item(0)->textContent));
+    
+    // Attempt to extract the image URL from the media:content tag
+    $media_content = $item->getElementsByTagName('content');
+    $image_url = '';
+    foreach ($media_content as $media) {
+        if ($media->getAttribute('medium') == 'image') {
+            $image_url = $media->getAttribute('url');
+            break;
+        }
+    }
+    
+    // Output item as a card
+    echo '<div class="card">';
+    echo '<h4>' . $title . '</h4>';
+    if ($image_url) {
+        echo '<img src="' . $image_url . '" alt="Image">';
+    }
+    echo '<p><strong>' . $description . ' <a href=' . $link. '></strong>link ...</a>';
+    echo ' <a href=?delete_title=' . urlencode($title). '>Delete ...</a></p>';
+    echo '<p><strong>Published Date:</strong> <span style="font-size: 12px;">' . $pubDate . '</span></p>';
+    echo '</div>';
+}
 ?>
+<script>
+// Auto refresh the page every 5 minutes
+setTimeout(function() {
+    window.location.href = window.location.origin + window.location.pathname;
+}, 5 * 60 * 1000); // 5 minutes in milliseconds
+</script>
+</body>
+</html>
