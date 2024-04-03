@@ -98,6 +98,11 @@ foreach($stocks as $stock) {
 
 echo '</table>';
 
+// Get the current time
+$currentTime = date("F j, Y, g:i a");
+// Output the current time
+echo "Last update: " . $currentTime;
+
 // Google News API URL
 $api_url = 'https://news.google.com/rss/search?q=finance&hl=en-US&gl=US&ceid=US:en';
 
@@ -130,10 +135,6 @@ if ($xml && isset($xml->channel->item)) {
 }
 
 
-// Get the current time
-$currentTime = date("F j, Y, g:i a");
-// Output the current time
-echo "<br><br>Last update: " . $currentTime;
 
 ?>
 
